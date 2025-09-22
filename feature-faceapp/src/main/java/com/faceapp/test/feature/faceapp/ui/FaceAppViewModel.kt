@@ -41,9 +41,9 @@ class FaceAppViewModel @Inject constructor(
         .catch { emit(Error(it)) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), Loading)
 
-    fun addFaceApp(name: String) {
+    fun launchPermissionRequest() {
         viewModelScope.launch {
-            faceAppRepository.add(name)
+//            faceAppRepository.add()
         }
     }
 }

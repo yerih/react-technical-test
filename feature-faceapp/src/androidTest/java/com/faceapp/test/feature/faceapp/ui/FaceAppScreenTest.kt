@@ -27,7 +27,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
- * UI tests for [FaceAppScreen].
+ * UI tests for [WelcomeScreen].
  */
 @RunWith(AndroidJUnit4::class)
 class FaceAppScreenTest {
@@ -38,7 +38,7 @@ class FaceAppScreenTest {
     @Before
     fun setup() {
         composeTestRule.setContent {
-            FaceAppScreen(FAKE_DATA, onSave = {})
+            WelcomeScreen(FAKE_DATA, onSave = {})
         }
     }
     @Test

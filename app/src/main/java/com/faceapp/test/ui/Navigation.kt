@@ -23,13 +23,17 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.faceapp.test.feature.faceapp.ui.FaceAppScreen
+import com.faceapp.test.feature.faceapp.ui.WelcomeScreen
 
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "main") {
-        composable("main") { FaceAppScreen(modifier = Modifier.padding(16.dp)) }
+        composable("main") {
+            WelcomeScreen()
+        }
+
+
     }
 }
