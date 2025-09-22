@@ -16,6 +16,7 @@
 
 package com.faceapp.test.feature.faceapp.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,8 +25,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import com.faceapp.test.core.data.FaceAppRepository
+import com.faceapp.test.core.ui.permissions.PermissionRequester
 import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Error
 import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Loading
 import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Success
@@ -33,7 +34,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FaceAppViewModel @Inject constructor(
-    private val faceAppRepository: FaceAppRepository
+    private val faceAppRepository: FaceAppRepository,
 ) : ViewModel() {
 
     val uiState: StateFlow<FaceAppUiState> = faceAppRepository
@@ -41,11 +42,11 @@ class FaceAppViewModel @Inject constructor(
         .catch { emit(Error(it)) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), Loading)
 
-    fun launchPermissionRequest() {
-        viewModelScope.launch {
-//            faceAppRepository.add()
-        }
+    fun onStart(){
+        Log.i("TGB","onStart")
     }
+
+
 }
 
 sealed interface FaceAppUiState {

@@ -36,6 +36,7 @@ interface DataModule {
     fun bindsFaceAppRepository(
         faceAppRepository: DefaultFaceAppRepository
     ): FaceAppRepository
+
 }
 
 class FakeFaceAppRepository @Inject constructor() : FaceAppRepository {
