@@ -26,6 +26,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://maven.regulaforensics.com/RegulaDocumentReader") }
     }
 }
 rootProject.name = "Multimodule template"

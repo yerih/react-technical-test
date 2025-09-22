@@ -16,9 +16,11 @@
 
 package com.faceapp.test.feature.faceapp.ui
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.faceapp.test.RegulaLicense
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,15 +28,19 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import com.faceapp.test.core.data.FaceAppRepository
-import com.faceapp.test.core.ui.permissions.PermissionRequester
 import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Error
 import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Loading
 import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Success
+import com.regula.facesdk.FaceSDK
+import com.regula.facesdk.callback.FaceInitializationCompletion
+import com.regula.facesdk.configuration.InitializationConfiguration
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 @HiltViewModel
 class FaceAppViewModel @Inject constructor(
     private val faceAppRepository: FaceAppRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     val uiState: StateFlow<FaceAppUiState> = faceAppRepository
@@ -44,6 +50,21 @@ class FaceAppViewModel @Inject constructor(
 
     fun onStart(){
         Log.i("TGB","onStart")
+    }
+
+    init {
+        val license: ByteArray? = RegulaLicense.getLicense(context)
+        license?.let{
+                    Log.i("TGB", "license != null")
+            val configuration =
+                InitializationConfiguration.Builder(license).setLicenseUpdate(false).build()
+            FaceSDK.Instance().initialize(context, configuration,
+                FaceInitializationCompletion { status, exception ->
+                    Log.i("TGB", "status = ${status}, exception = ${exception}")
+                })
+        }?:let{
+            Log.i("TGB", "license null")
+        }
     }
 
 

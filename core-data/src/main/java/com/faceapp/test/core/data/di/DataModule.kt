@@ -16,6 +16,7 @@
 
 package com.faceapp.test.core.data.di
 
+import android.content.Context
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -24,6 +25,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import com.faceapp.test.core.data.FaceAppRepository
 import com.faceapp.test.core.data.DefaultFaceAppRepository
+import com.faceapp.test.core.database.FaceApp
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 

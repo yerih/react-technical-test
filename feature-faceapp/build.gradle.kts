@@ -97,4 +97,9 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
 
 
+    //Face SDK
+    api("com.regula.face:api:+@aar") {
+        isTransitive = true
+    }
+    api("com.regula.face.core:match:+@aar")
 }
