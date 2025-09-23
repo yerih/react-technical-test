@@ -54,10 +54,6 @@ class FaceAppViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    val uiState1_: StateFlow<FaceAppUiState> = faceAppRepository
-        .faceApps.map<List<String>, FaceAppUiState> { Success(data = it) }
-//        .catch { emit(Error(it)) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), Loading)
 
     private val _uiState = MutableStateFlow(UiState())
     var uiState = _uiState.asStateFlow()

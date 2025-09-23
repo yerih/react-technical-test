@@ -40,6 +40,15 @@
         android:theme="@style/Theme.FaceAppTest"
         android:name=".FaceAppTest"
         tools:targetApi="31">
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.faceapp.test.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

@@ -102,4 +102,7 @@ dependencies {
         isTransitive = true
     }
     api("com.regula.face.core:match:+@aar")
+
+    //Images
+    implementation("io.coil-kt:coil-compose:2.5.0")
 }
