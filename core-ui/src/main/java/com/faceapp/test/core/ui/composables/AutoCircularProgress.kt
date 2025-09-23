@@ -29,5 +29,5 @@ fun AutoCircularProgress(
         label = "progress"
     )
 
-    CircularProgressIndicator(progress = progress, color = Color.White, modifier = Modifier.size(20.dp))
+    CircularProgressIndicator(progress = progress, modifier = Modifier.size(20.dp))
 }

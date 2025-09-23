@@ -19,7 +19,8 @@ una separación de lógica de negocio y lógica de interfaz gráfica.
 
 ### Flujo de una sola vista
 Al principio del proyecto se intentó implementar el desarrollo en una vista, pero iba a romper con los patrones 
-y código limpio. Al final se decidió añadir más pantallas a la navegación y compartir el viewModel. 
+y código limpio. Al final se decidió añadir más pantallas a la navegación y compartir el viewModel.
+
 
 
 ## Patrones de diseño aplicados

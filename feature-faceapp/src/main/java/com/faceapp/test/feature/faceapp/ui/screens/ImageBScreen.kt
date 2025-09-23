@@ -71,6 +71,7 @@ fun ImageBScreen(
         Box(
             modifier = Modifier.size(200.dp).clip(CircleShape).border(1.dp, Color.Gray, CircleShape).clickable {
                 launchCamera(context, onError = { error = it }){ bitmap ->
+                    error = null
                     val uri = saveTempBitmap(context, bitmap, "img2").uri.also{ cameraUri = it}
                     captureBitmap(uri, false)
                     isCapturing = false

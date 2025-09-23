@@ -65,7 +65,7 @@ class FaceAppViewModel @Inject constructor(
             result.error?.let{error ->
                 _uiState.update { it.copy(resultModel = null, error = error) }
             }?:let {
-                _uiState.update { it.copy(resultModel = result) }
+                _uiState.update { it.copy(resultModel = result, error = null) }
             }
         }
     }
