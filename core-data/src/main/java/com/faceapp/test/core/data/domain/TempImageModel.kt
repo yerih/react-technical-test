@@ -1,4 +1,4 @@
-package com.faceapp.test.feature.faceapp.ui
+package com.faceapp.test.core.data.domain
 
 import android.net.Uri
 import java.io.File

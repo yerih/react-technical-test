@@ -1,4 +1,4 @@
-package com.faceapp.test.feature.faceapp.ui
+package com.faceapp.test.feature.faceapp.ui.screens
 
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.faceapp.test.core.ui.composables.AutoCircularProgress
+import com.faceapp.test.feature.faceapp.ui.presentation.UiState
 
 
 @Composable
@@ -83,7 +84,7 @@ fun MatchScreen(
         }
 
         uiState.value.error?.let {
-            Text("Error: ", style = TextStyle(fontSize = 16.sp, color = Color.Red))
+            Text("Error: ${it.message}", style = TextStyle(fontSize = 16.sp, color = Color.Red))
             showBtns = true
         }?: uiState.value.resultModel?.let{result ->
 

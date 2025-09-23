@@ -1,4 +1,4 @@
-package com.faceapp.test.feature.faceapp.ui
+package com.faceapp.test.feature.faceapp.ui.screens
 
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
@@ -43,6 +43,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.faceapp.test.feature.faceapp.R
+import com.faceapp.test.core.data.domain.saveTempBitmap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

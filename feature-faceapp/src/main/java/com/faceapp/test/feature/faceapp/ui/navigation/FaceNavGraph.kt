@@ -1,15 +1,16 @@
-package com.faceapp.test.feature.faceapp.ui
+package com.faceapp.test.feature.faceapp.ui.navigation
 
-import android.util.Log
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.faceapp.test.log
-import com.faceapp.test.sharedViewModel
+import com.faceapp.test.feature.faceapp.ui.presentation.FaceAppViewModel
+import com.faceapp.test.feature.faceapp.ui.screens.ImageAScreen
+import com.faceapp.test.feature.faceapp.ui.screens.ImageBScreen
+import com.faceapp.test.feature.faceapp.ui.screens.MatchScreen
+import com.faceapp.test.feature.faceapp.ui.sharedViewModel
+import com.faceapp.test.feature.faceapp.ui.screens.WelcomeScreen
 
 
 enum class Routes{
@@ -37,14 +38,14 @@ fun NavGraphBuilder.faceNavGraph(
             )
         }
 
-        composable(Routes.IMAGE_A.name){entry ->
+        composable(Routes.IMAGE_A.name){ entry ->
             val viewModel = entry.sharedViewModel<FaceAppViewModel>(navController = navController, graphRoute)
             ImageAScreen(
                 captureBitmap = viewModel::captureBitmap,
                 onNext = { navController.navigate(Routes.IMAGE_B.name)}
             )
         }
-        composable(Routes.IMAGE_B.name){entry ->
+        composable(Routes.IMAGE_B.name){ entry ->
             val viewModel = entry.sharedViewModel<FaceAppViewModel>(navController = navController, graphRoute)
             ImageBScreen(
                 captureBitmap = viewModel::captureBitmap,
@@ -52,7 +53,7 @@ fun NavGraphBuilder.faceNavGraph(
             )
         }
 
-        composable(Routes.MATCH.name){entry ->
+        composable(Routes.MATCH.name){ entry ->
             val viewModel = entry.sharedViewModel<FaceAppViewModel>(navController = navController, graphRoute)
             MatchScreen(
                 onStart = viewModel::matchFaces,

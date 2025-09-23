@@ -1,4 +1,4 @@
-package com.faceapp.test
+package com.faceapp.test.feature.faceapp.ui.datasources
 
 import android.content.Context
 import com.faceapp.test.feature.faceapp.R

@@ -16,17 +16,11 @@
 
 package com.faceapp.test.ui
 
-import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.faceapp.test.feature.faceapp.ui.FaceAppViewModel
-import com.faceapp.test.feature.faceapp.ui.Routes
-import com.faceapp.test.feature.faceapp.ui.WelcomeScreen
-import com.faceapp.test.feature.faceapp.ui.faceNavGraph
+import com.faceapp.test.feature.faceapp.ui.navigation.Routes
+import com.faceapp.test.feature.faceapp.ui.navigation.faceNavGraph
 
 
 @Composable

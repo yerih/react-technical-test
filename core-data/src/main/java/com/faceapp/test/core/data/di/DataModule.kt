@@ -16,17 +16,15 @@
 
 package com.faceapp.test.core.data.di
 
-import android.content.Context
+import android.net.Uri
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import com.faceapp.test.core.data.FaceAppRepository
-import com.faceapp.test.core.data.DefaultFaceAppRepository
-import com.faceapp.test.core.database.FaceApp
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.faceapp.test.core.data.FaceAppRepositoryImpl
+import com.faceapp.test.core.data.FaceDataSource
+import com.faceapp.test.core.data.domain.FaceResultModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,17 +35,26 @@ interface DataModule {
     @Singleton
     @Binds
     fun bindsFaceAppRepository(
-        faceAppRepository: DefaultFaceAppRepository
+        faceAppRepository: FaceAppRepositoryImpl
     ): FaceAppRepository
 
 }
 
-class FakeFaceAppRepository @Inject constructor() : FaceAppRepository {
-    override val faceApps: Flow<List<String>> = flowOf(fakeFaceApps)
+class FakeFaceAppRepository @Inject constructor(
+    private val faceDataSource: FaceDataSource
+) : FaceAppRepository {
 
-    override suspend fun add(name: String) {
-        throw NotImplementedError()
+
+
+    override fun initialize(onFinished: (status: Boolean, error: Error?) -> Unit) {
+        TODO("Not yet implemented")
     }
+
+    override fun matchFaces(uri1: Uri, uri2: Uri, onFinished: (FaceResultModel) -> Unit) {
+        TODO("Not yet implemented")
+    }
+
+
 }
 
 val fakeFaceApps = listOf("One", "Two", "Three")

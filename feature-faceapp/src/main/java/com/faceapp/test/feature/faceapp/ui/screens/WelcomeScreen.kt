@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalPermissionsApi::class)
 
-package com.faceapp.test.feature.faceapp.ui
+package com.faceapp.test.feature.faceapp.ui.screens
 
 import com.faceapp.test.core.ui.MyApplicationTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -10,13 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -32,9 +28,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.faceapp.test.core.ui.R
 import com.faceapp.test.core.ui.composables.AutoCircularProgress
 import com.faceapp.test.core.ui.permissions.PermissionRequester
+import com.faceapp.test.feature.faceapp.ui.presentation.FaceAppViewModel
+import com.faceapp.test.feature.faceapp.ui.presentation.UiState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun WelcomeScreen(

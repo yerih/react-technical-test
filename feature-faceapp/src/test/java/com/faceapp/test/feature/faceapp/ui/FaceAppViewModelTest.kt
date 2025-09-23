@@ -26,7 +26,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import com.faceapp.test.core.data.FaceAppRepository
 import com.faceapp.test.feature.faceapp.ui.FaceAppUiState
-import com.faceapp.test.feature.faceapp.ui.FaceAppViewModel
+import com.faceapp.test.feature.faceapp.ui.presentation.FaceAppViewModel
 
 /**
  * Example local unit test, which will execute on the development machine (host).
