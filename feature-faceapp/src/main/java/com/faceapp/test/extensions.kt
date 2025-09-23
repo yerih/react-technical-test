@@ -1,5 +1,6 @@
 package com.faceapp.test
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -16,9 +17,12 @@ inline fun <reified T: ViewModel> NavBackStackEntry.sharedViewModel(
     navController: NavController,
     graphRoute: String
 ): T {
-//    val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
     val parentEntry = remember(this){
         navController.getBackStackEntry(graphRoute)
     }
     return hiltViewModel(parentEntry)
 }
+
+fun Any.log(msg: String, tag: String = "TGB", ) = Log.i(tag, msg)
+
+

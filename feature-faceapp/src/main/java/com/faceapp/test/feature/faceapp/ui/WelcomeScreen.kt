@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.faceapp.test.core.ui.R
+import com.faceapp.test.core.ui.composables.AutoCircularProgress
 import com.faceapp.test.core.ui.permissions.PermissionRequester
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,14 +56,10 @@ internal fun WelcomeScreen(
     val context = LocalContext.current
     val permissionState = permissionRequester.checkPermissions()
 
-
-
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
+        modifier = Modifier.fillMaxSize().padding(20.dp)
     ) {
         Text(
             text = "FaceApp Test",
@@ -88,7 +85,7 @@ internal fun WelcomeScreen(
         }
         if(uiState.value.isLoading){
             Spacer(modifier = Modifier.height(10.dp))
-            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp))
+            AutoCircularProgress()
             Text("Loading...")
         }
 

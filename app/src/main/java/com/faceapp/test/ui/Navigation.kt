@@ -32,8 +32,6 @@ import com.faceapp.test.feature.faceapp.ui.faceNavGraph
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
-//    val actv = LocalContext.current as ComponentActivity
-//    val viewModel: FaceAppViewModel = viewModel(viewModelStoreOwner = actv)
 
     NavHost(navController = navController, startDestination = Routes.FACE_GRAPH.name) {
         faceNavGraph(navController, )

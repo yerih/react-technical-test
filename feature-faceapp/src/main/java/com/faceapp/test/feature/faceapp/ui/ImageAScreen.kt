@@ -1,9 +1,9 @@
 package com.faceapp.test.feature.faceapp.ui
 
-import android.graphics.Bitmap
+import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.util.Log
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -43,6 +43,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.faceapp.test.feature.faceapp.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -59,26 +60,11 @@ fun ImageAScreen(
     var isBtnEnabled by remember{ mutableStateOf(false) }
 
 
-    LaunchedEffect(key1 = imageUri){
-        isBtnEnabled = (imageUri != null)
-        Log.i("TGB", "isBtnEnabled = $isBtnEnabled")
-    }
+    LaunchedEffect(key1 = imageUri){ isBtnEnabled = (imageUri != null) }
 
-
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        if (uri != null) {
-            imageUri = uri
-            coroutineScope.launch {
-                val imageLoader = ImageLoader(context)
-                val request = ImageRequest.Builder(context).data(uri).allowHardware(false).build()
-                val result = (imageLoader.execute(request) as SuccessResult).drawable
-                val bitmap = (result as BitmapDrawable).bitmap
-                saveTempBitmap(context, bitmap, "img1")
-                captureBitmap(uri, true)
-            }
-        }
+    val imagePickerLauncher = ImagePickerLauncher(context = context, scope = coroutineScope){ uri ->
+        imageUri = uri
+        captureBitmap(uri, true)
     }
 
     Column(
@@ -95,10 +81,7 @@ fun ImageAScreen(
         )
 
         Box(
-            modifier = Modifier
-                .size(200.dp)
-                .clip(CircleShape)
-                .border(1.dp, Color.Gray, CircleShape)
+            modifier = Modifier.size(200.dp).clip(CircleShape).border(1.dp, Color.Gray, CircleShape)
                 .clickable { imagePickerLauncher.launch("image/*") },
             contentAlignment = Alignment.Center
         ) {
@@ -125,5 +108,27 @@ fun ImageAScreen(
     }
 }
 
+
+@Composable
+fun ImagePickerLauncher(
+    context: Context,
+    scope: CoroutineScope,
+    onGetUri: (Uri)-> Unit
+): ManagedActivityResultLauncher<String, Uri?> {
+    return rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            scope.launch {
+                val imageLoader = ImageLoader(context)
+                val request = ImageRequest.Builder(context).data(uri).allowHardware(false).build()
+                val result = (imageLoader.execute(request) as SuccessResult).drawable
+                val bitmap = (result as BitmapDrawable).bitmap
+                saveTempBitmap(context, bitmap, "img1")
+                onGetUri(uri)
+            }
+        }
+    }
+}
 
 

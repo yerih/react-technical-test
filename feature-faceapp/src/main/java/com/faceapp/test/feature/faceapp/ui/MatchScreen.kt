@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.faceapp.test.core.ui.composables.AutoCircularProgress
 
 
 @Composable
@@ -89,10 +89,10 @@ fun MatchScreen(
 
             Text("Results:", style = TextStyle(fontSize = 25.sp, color = Color.Green))
             Text("Similarity: ${result.similarity}", style = TextStyle(fontSize = 20.sp, color = Color.Green))
-            Text("Another: ${result.another}", style = TextStyle(fontSize = 20.sp, color = Color.Green))
+            Text("Detections: ${result.detections}", style = TextStyle(fontSize = 20.sp, color = Color.Green))
             showBtns = true
         }?:let {
-            CircularProgressIndicator()
+            AutoCircularProgress()
             Text("Verifying...")
         }
 

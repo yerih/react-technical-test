@@ -8,6 +8,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.faceapp.test.log
 import com.faceapp.test.sharedViewModel
 
 
@@ -30,10 +31,6 @@ fun NavGraphBuilder.faceNavGraph(
     ){
         composable(Routes.WELCOME.name) { entry ->
             val viewModel = entry.sharedViewModel<FaceAppViewModel>(navController = navController, graphRoute)
-
-            LaunchedEffect(key1 = Unit){
-                Log.i("TGB", "FaceAppViewModel instance: ${System.identityHashCode(viewModel)} uri1 y uri2: ${viewModel.uri1} ${viewModel.uri2}")
-            }
             WelcomeScreen(
                 viewModel = viewModel,
                 onStart = { navController.navigate(Routes.IMAGE_A.name) }
@@ -42,10 +39,6 @@ fun NavGraphBuilder.faceNavGraph(
 
         composable(Routes.IMAGE_A.name){entry ->
             val viewModel = entry.sharedViewModel<FaceAppViewModel>(navController = navController, graphRoute)
-
-            LaunchedEffect(key1 = Unit){
-                Log.i("TGB", "FaceAppViewModel instance: ${System.identityHashCode(viewModel)} uri1 y uri2: ${viewModel.uri1} ${viewModel.uri2}")
-            }
             ImageAScreen(
                 captureBitmap = viewModel::captureBitmap,
                 onNext = { navController.navigate(Routes.IMAGE_B.name)}
@@ -53,10 +46,6 @@ fun NavGraphBuilder.faceNavGraph(
         }
         composable(Routes.IMAGE_B.name){entry ->
             val viewModel = entry.sharedViewModel<FaceAppViewModel>(navController = navController, graphRoute)
-
-            LaunchedEffect(key1 = Unit){
-                Log.i("TGB", "FaceAppViewModel instance: ${System.identityHashCode(viewModel)} uri1 y uri2: ${viewModel.uri1} ${viewModel.uri2}")
-            }
             ImageBScreen(
                 captureBitmap = viewModel::captureBitmap,
                 onNext = {navController.navigate(Routes.MATCH.name)}
@@ -65,13 +54,12 @@ fun NavGraphBuilder.faceNavGraph(
 
         composable(Routes.MATCH.name){entry ->
             val viewModel = entry.sharedViewModel<FaceAppViewModel>(navController = navController, graphRoute)
-
-            LaunchedEffect(key1 = Unit){
-                Log.i("TGB", "FaceAppViewModel instance: ${System.identityHashCode(viewModel)} uri1 y uri2: ${viewModel.uri1} ${viewModel.uri2}")
-            }
             MatchScreen(
                 onStart = viewModel::matchFaces,
-                onMatchAgain = {navController.popBackStack(Routes.IMAGE_A.name, inclusive = true)},
+                onMatchAgain = {
+                    viewModel.resetState()
+                    navController.popBackStack(Routes.IMAGE_A.name, inclusive = true)
+                },
                 uri1 = viewModel.uri1!!,
                 uri2 = viewModel.uri2!!,
                 uiState = viewModel.uiState.collectAsState()

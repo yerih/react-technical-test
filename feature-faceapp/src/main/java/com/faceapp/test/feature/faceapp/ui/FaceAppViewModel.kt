@@ -17,6 +17,7 @@
 package com.faceapp.test.feature.faceapp.ui
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.util.Log
@@ -106,24 +107,42 @@ class FaceAppViewModel @Inject constructor(
                 else -> null
             }
 
-            similarity?.run {
-                Log.i("TGB", "similarity = ${similarity.toPercentage()}")
-                _uiState.update { it.copy(resultModel = FaceResultModel(similarity = similarity.toPercentage())) }
-            }?: response.exception?.let {
-                Log.i("TGB", "similarity exception= ${it.message}")
-                _uiState.update { state -> state.copy(resultModel = null, error = Error(it.message)) }
-            } ?: let{
-                Log.i("TGB", "similarity = null")
+            when{
+                similarity != null -> {
+                    Log.i("TGB", "similarity = ${similarity.toPercentage()}")
+                    _uiState.update { it.copy(resultModel = FaceResultModel(similarity = similarity.toPercentage())) }
+                }
+                response.exception != null -> {
+                    Log.i("TGB", "similarity exception= ${response.exception.message}")
+                    _uiState.update { state -> state.copy(resultModel = null, error = Error(response.exception.message)) }
+                    return@matchFaces
+                }
+                else -> {
+                    Log.i("TGB", "similarity = null")
+                }
             }
+
+
+            val faceBitmaps = arrayListOf<Bitmap>()
+
+            for(matchFaces in response.detections) {
+                for (face in matchFaces.faces)
+                    face.crop?.let { faceBitmaps.add(it) }
+            }
+
+            val l = faceBitmaps.size
+            _uiState.update { it.copy(resultModel = FaceResultModel(similarity = similarity?.toPercentage()?:"", detections = "$l")) }
 
         }
     }
 
 
     fun captureBitmap(uri: Uri, isFirst: Boolean = true){
-        Log.i("TGB","captureBitmap: number = ${if(isFirst)1 else 2}")
+//        Log.i("TGB","captureBitmap: number = ${if(isFirst)1 else 2}")
         if(isFirst) uri1 = uri else uri2 = uri
     }
+
+    fun resetState() = _uiState.update { it.copy(resultModel = null) }
 
 }
 

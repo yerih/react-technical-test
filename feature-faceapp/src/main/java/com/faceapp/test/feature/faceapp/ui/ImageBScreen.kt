@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
@@ -46,6 +47,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.faceapp.test.feature.faceapp.R
+import com.faceapp.test.log
 import com.regula.facesdk.FaceSDK
 import com.regula.facesdk.configuration.FaceCaptureConfiguration
 import kotlinx.coroutines.launch
@@ -59,17 +61,13 @@ fun ImageBScreen(
 ){
     val context = LocalContext.current
     val defaultImage = painterResource(id = R.drawable.default_image)
-    var camBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var cameraUri by remember{ mutableStateOf<Uri?>(null) }
     var isBtnEnabled by remember{ mutableStateOf(false) }
     var isCapturing by remember{ mutableStateOf(true) }
+    var error by remember{ mutableStateOf<String?>(null)}
 
 
-    LaunchedEffect(key1 = cameraUri){
-        isBtnEnabled = (cameraUri != null)
-        Log.i("TGB", "isBtnEnabled = $isBtnEnabled")
-    }
-
+    LaunchedEffect(key1 = cameraUri){ isBtnEnabled = (cameraUri != null) }
 
 
     Column(
@@ -82,8 +80,7 @@ fun ImageBScreen(
 
         Box(
             modifier = Modifier.size(200.dp).clip(CircleShape).border(1.dp, Color.Gray, CircleShape).clickable {
-                launchCamera(context){ bitmap ->
-                    camBitmap = bitmap
+                launchCamera(context, onError = { error = it }){ bitmap ->
                     val uri = saveTempBitmap(context, bitmap, "img2").uri.also{ cameraUri = it}
                     captureBitmap(uri, false)
                     isCapturing = false
@@ -91,24 +88,20 @@ fun ImageBScreen(
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = if (cameraUri != null) rememberAsyncImagePainter(model = cameraUri) else defaultImage,
+                painter = cameraUri?.run{ rememberAsyncImagePainter(model = cameraUri) } ?: defaultImage,
                 contentDescription = "Take a photo",
                 modifier = Modifier.size(200.dp),
                 contentScale = ContentScale.Crop
             )
         }
 
+        error?.let { Text("Error: $it. Try again", style = TextStyle(color = Color.Red)) }
+
         Spacer(modifier = Modifier.height(20.dp))
         Button(
             enabled = isBtnEnabled,
             modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                camBitmap?.let {
-                    onNext()
-                }?: run {
-                    Log.i("TGB", "camBitmap is null")
-                }
-            },
+            onClick = { cameraUri?.let { onNext() } },
         ) {
             Text("Match")
         }
@@ -118,6 +111,7 @@ fun ImageBScreen(
 
 fun launchCamera(
     context: Context,
+    onError: (String)->Unit = {},
     onGetImage: (Bitmap)->Unit = {_->},
 ){
 
@@ -127,11 +121,11 @@ fun launchCamera(
         .build()
 
     FaceSDK.Instance().presentFaceCaptureActivity(context as ComponentActivity, configuration) { response ->
-        // ... check response.image for capture result.
-        Log.i("TGB", "response.image = ${response?.image}, excepcion = ${response.exception?.message}")
+        response.log("response.image = ${response?.image}, excepcion = ${response.exception?.message}")
         response.image?.let {
-            onGetImage(response.image.bitmap)
+            onGetImage(it.bitmap)
         }?:response.exception?.let{
+            onError(it.message.toString())
         }
     }
 }
