@@ -50,6 +50,10 @@ class FakeFaceAppRepository @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override fun deinitialize() {
+        TODO("Not yet implemented")
+    }
+
     override fun matchFaces(uri1: Uri, uri2: Uri, onFinished: (FaceResultModel) -> Unit) {
         TODO("Not yet implemented")
     }

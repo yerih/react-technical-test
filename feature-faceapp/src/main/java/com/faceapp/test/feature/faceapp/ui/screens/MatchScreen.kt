@@ -40,6 +40,7 @@ import com.faceapp.test.feature.faceapp.ui.presentation.UiState
 @Composable
 fun MatchScreen(
     onStart: ()-> Unit = {},
+    onExit: ()->Unit = {},
     onMatchAgain: ()->Unit = {},
     uri1: Uri,
     uri2: Uri,
@@ -109,7 +110,10 @@ fun MatchScreen(
             Spacer(modifier = Modifier.height(10.dp))
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { (context as ComponentActivity).finish() },
+                onClick = {
+                    onExit()
+                    (context as ComponentActivity).finish()
+                          },
             ) {
                 Text("Exit")
             }

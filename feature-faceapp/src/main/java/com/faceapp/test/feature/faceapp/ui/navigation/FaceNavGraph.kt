@@ -57,6 +57,7 @@ fun NavGraphBuilder.faceNavGraph(
             val viewModel = entry.sharedViewModel<FaceAppViewModel>(navController = navController, graphRoute)
             MatchScreen(
                 onStart = viewModel::matchFaces,
+                onExit = viewModel::onExit,
                 onMatchAgain = {
                     viewModel.resetState()
                     navController.popBackStack(Routes.IMAGE_A.name, inclusive = true)

@@ -9,6 +9,7 @@ import javax.inject.Inject
 interface FaceAppRepository {
 
     fun initialize(onFinished: (status: Boolean, error: Error?)->Unit)
+    fun deinitialize()
 
     fun matchFaces(uri1: Uri, uri2: Uri, onFinished: (FaceResultModel)->Unit)
 }
@@ -18,6 +19,8 @@ class FaceAppRepositoryImpl @Inject constructor(
 ): FaceAppRepository{
 
     override fun initialize(onFinished: (status: Boolean, error: Error?) -> Unit) = faceDataSource.initialize(onFinished)
+    override fun deinitialize() = faceDataSource.deinitialize()
+
     override fun matchFaces(uri1: Uri, uri2: Uri, onFinished: (FaceResultModel) -> Unit) = faceDataSource.matchFaces(
         uri1,
         uri2,

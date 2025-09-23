@@ -5,6 +5,7 @@ import com.faceapp.test.core.data.domain.FaceResultModel
 
 interface FaceDataSource {
     fun initialize(onFinished: (Boolean, Error?)->Unit)
+    fun deinitialize()
 
     fun matchFaces(uri1: Uri, uri2: Uri, onFinished: (FaceResultModel) -> Unit)
 

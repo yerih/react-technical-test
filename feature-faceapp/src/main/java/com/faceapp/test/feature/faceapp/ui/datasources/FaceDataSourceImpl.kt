@@ -39,6 +39,10 @@ class FaceDataSourceImpl @Inject constructor(
         }?: log( "license null")
     }
 
+    override fun deinitialize() {
+        FaceSDK.Instance().deinitialize()
+    }
+
     override fun matchFaces(uri1: Uri, uri2: Uri, onFinished: (FaceResultModel) -> Unit) {
         val bmp1 = loadBitmapFromUri(context, uri1!!)
         val bmp2 = loadBitmapFromUri(context, uri2!!)

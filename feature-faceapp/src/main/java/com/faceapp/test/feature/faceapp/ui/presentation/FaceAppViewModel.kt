@@ -77,6 +77,8 @@ class FaceAppViewModel @Inject constructor(
 
     fun resetState() = _uiState.update { it.copy(resultModel = null, error = null) }
 
+    fun onExit() = faceAppRepository.deinitialize()
+
 }
 
 
