@@ -1,5 +1,6 @@
 package com.faceapp.test.feature.faceapp.ui
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -10,6 +11,9 @@ enum class Routes{
     WELCOME,
     FACE_GRAPH,
     FACE,
+    IMAGE_A,
+    IMAGE_B,
+    MATCH
 }
 
 fun NavGraphBuilder.faceNavGraph(navController: NavHostController){
@@ -18,11 +22,22 @@ fun NavGraphBuilder.faceNavGraph(navController: NavHostController){
         route = Routes.FACE_GRAPH.name
     ){
         composable(Routes.WELCOME.name) {
-            WelcomeScreen(onStart = { navController.navigate(Routes.FACE.name) })
+            val viewModel = hiltViewModel<FaceAppViewModel>()
+            WelcomeScreen(onStart = { navController.navigate(Routes.IMAGE_A.name) })
         }
-        composable(Routes.FACE.name){
-            FaceScreen()
+
+        composable(Routes.IMAGE_A.name){
+            val viewModel = hiltViewModel<FaceAppViewModel>()
+            ImageAScreen(
+                captureBitmap = viewModel::captureBitmap,
+                onNext = { navController.navigate(Routes.IMAGE_B.name)}
+            )
         }
+        composable(Routes.IMAGE_B.name){
+            val viewModel = hiltViewModel<FaceAppViewModel>()
+//            ImageBScreen(onNext = {navController.navigate(Routes.MATCH.name)})
+        }
+
     }
 }
 

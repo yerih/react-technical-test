@@ -17,6 +17,8 @@
 package com.faceapp.test.feature.faceapp.ui
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Color
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,9 +32,17 @@ import kotlinx.coroutines.flow.stateIn
 import com.faceapp.test.core.data.FaceAppRepository
 import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Loading
 import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Success
+import com.faceapp.test.toPercentage
 import com.regula.facesdk.FaceSDK
 import com.regula.facesdk.callback.FaceInitializationCompletion
 import com.regula.facesdk.configuration.InitializationConfiguration
+import com.regula.facesdk.detection.request.OutputImageCrop
+import com.regula.facesdk.detection.request.OutputImageParams
+import com.regula.facesdk.enums.ImageType
+import com.regula.facesdk.enums.OutputImageCropAspectRatio
+import com.regula.facesdk.model.MatchFacesImage
+import com.regula.facesdk.model.results.matchfaces.MatchFacesSimilarityThresholdSplit
+import com.regula.facesdk.request.MatchFacesRequest
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,6 +67,8 @@ class FaceAppViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(UiState())
     var uiState = _uiState.asStateFlow()
+    var bmp1: Bitmap? = null
+    var bmp2: Bitmap? = null
 
 
 
@@ -79,6 +91,41 @@ class FaceAppViewModel @Inject constructor(
         }
     }
 
+    fun matchFaces(img1: Bitmap, img2: Bitmap){
+        val imgA = MatchFacesImage(img1, ImageType.PRINTED)
+        val imgB = MatchFacesImage(img2, ImageType.LIVE)
+        val matchFacesRequest = MatchFacesRequest(arrayListOf(imgA, imgB))
+
+        val crop = OutputImageCrop(
+            OutputImageCropAspectRatio.OUTPUT_IMAGE_CROP_ASPECT_RATIO_3X4
+        )
+        val outputImageParams = OutputImageParams(crop, Color.WHITE)
+        matchFacesRequest.outputImageParams = outputImageParams
+
+        FaceSDK.Instance().matchFaces(context, matchFacesRequest){response ->
+            val split = MatchFacesSimilarityThresholdSplit(response.results, 0.75)
+            val similarity = when {
+                split.matchedFaces.size > 0   -> split.matchedFaces[0].similarity
+                split.unmatchedFaces.size > 0 -> split.unmatchedFaces[0].similarity
+                else -> null
+            }
+
+            similarity?.run {
+                Log.i("TGB", "similarity = ${similarity.toPercentage()}")
+            }?: response.exception?.let {
+                Log.i("TGB", "similarity exception= ${it.message}")
+            } ?: let{
+                Log.i("TGB", "similarity = null")
+            }
+
+        }
+    }
+
+
+    fun captureBitmap(b: Bitmap, isFirst: Boolean = true){
+        Log.i("TGB","captureBitmap: number = ${if(isFirst)1 else 2}")
+        if(isFirst) bmp1 = b else bmp2 = b
+    }
 
 }
 

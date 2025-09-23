@@ -78,7 +78,7 @@ internal fun WelcomeScreen(
 
         Button(
             onClick = {
-//                if(uiState.value.isLoading) return@Button
+                if(uiState.value.isLoading) return@Button
                 if(!permissionState.allPermissionsGranted)permissionState.launchMultiplePermissionRequest()
                 else onStart()
             },
