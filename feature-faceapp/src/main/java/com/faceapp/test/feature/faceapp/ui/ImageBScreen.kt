@@ -1,9 +1,12 @@
 package com.faceapp.test.feature.faceapp.ui
 
+
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -27,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,92 +40,103 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.faceapp.test.feature.faceapp.R
+import com.regula.facesdk.FaceSDK
+import com.regula.facesdk.configuration.FaceCaptureConfiguration
 import kotlinx.coroutines.launch
+import java.io.File
 
 
 @Composable
-fun ImageAScreen(
+fun ImageBScreen(
     onNext: ()->Unit = {},
     captureBitmap: (Uri, Boolean) -> Unit = {_,_->},
 ){
-
-    var imageUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     val defaultImage = painterResource(id = R.drawable.default_image)
+    var camBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var cameraUri by remember{ mutableStateOf<Uri?>(null) }
     var isBtnEnabled by remember{ mutableStateOf(false) }
+    var isCapturing by remember{ mutableStateOf(true) }
 
 
-    LaunchedEffect(key1 = imageUri){
-        isBtnEnabled = (imageUri != null)
+    LaunchedEffect(key1 = cameraUri){
+        isBtnEnabled = (cameraUri != null)
         Log.i("TGB", "isBtnEnabled = $isBtnEnabled")
     }
 
 
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        if (uri != null) {
-            imageUri = uri
-            coroutineScope.launch {
-                val imageLoader = ImageLoader(context)
-                val request = ImageRequest.Builder(context).data(uri).allowHardware(false).build()
-                val result = (imageLoader.execute(request) as SuccessResult).drawable
-                val bitmap = (result as BitmapDrawable).bitmap
-                saveTempBitmap(context, bitmap, "img1")
-                captureBitmap(uri, true)
-            }
-        }
-    }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
+        modifier = Modifier.fillMaxSize().padding(20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text("Matching faces", fontSize = 40.sp)
-        Text(
-            "1. Select an face image (image A) from gallery to compare it. Click in the circle",
-            fontSize = 20.sp
-        )
+        Text("2. Use the camera for compare to the face image A. Click the circle to launch camera.", fontSize = 20.sp)
 
         Box(
-            modifier = Modifier
-                .size(200.dp)
-                .clip(CircleShape)
-                .border(1.dp, Color.Gray, CircleShape)
-                .clickable { imagePickerLauncher.launch("image/*") },
+            modifier = Modifier.size(200.dp).clip(CircleShape).border(1.dp, Color.Gray, CircleShape).clickable {
+                launchCamera(context){ bitmap ->
+                    camBitmap = bitmap
+                    val uri = saveTempBitmap(context, bitmap, "img2").uri.also{ cameraUri = it}
+                    captureBitmap(uri, false)
+                    isCapturing = false
+                } },
             contentAlignment = Alignment.Center
         ) {
-
             Image(
-                painter = if (imageUri != null) rememberAsyncImagePainter(model = imageUri) else defaultImage,
-                contentDescription = "Select a photo",
+                painter = if (cameraUri != null) rememberAsyncImagePainter(model = cameraUri) else defaultImage,
+                contentDescription = "Take a photo",
                 modifier = Modifier.size(200.dp),
                 contentScale = ContentScale.Crop
             )
         }
-
 
         Spacer(modifier = Modifier.height(20.dp))
         Button(
             enabled = isBtnEnabled,
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                onNext()
+                camBitmap?.let {
+                    onNext()
+                }?: run {
+                    Log.i("TGB", "camBitmap is null")
+                }
             },
         ) {
-            Text("Next")
+            Text("Match")
         }
     }
 }
+
+
+fun launchCamera(
+    context: Context,
+    onGetImage: (Bitmap)->Unit = {_->},
+){
+
+    val configuration = FaceCaptureConfiguration.Builder()
+        .setCameraId(0)
+        .setCameraSwitchEnabled(true)
+        .build()
+
+    FaceSDK.Instance().presentFaceCaptureActivity(context as ComponentActivity, configuration) { response ->
+        // ... check response.image for capture result.
+        Log.i("TGB", "response.image = ${response?.image}, excepcion = ${response.exception?.message}")
+        response.image?.let {
+            onGetImage(response.image.bitmap)
+        }?:response.exception?.let{
+        }
+    }
+}
+
+
 
 
 

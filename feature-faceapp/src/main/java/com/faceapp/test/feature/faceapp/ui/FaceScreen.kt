@@ -172,10 +172,7 @@ fun FaceScreen(
         Button(
             enabled = isBtnEnabled,
             modifier = Modifier.fillMaxWidth(),
-            onClick = {
-
-                viewModel.matchFaces(imageBitmap!!, camBitmap!!)
-                      },
+            onClick = {},
         ) {
             Text("Match")
         }

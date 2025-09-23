@@ -50,7 +50,6 @@ fun WelcomeScreen(
 internal fun WelcomeScreen(
     onStart: () -> Unit = {},
     uiState: State<UiState> = mutableStateOf(UiState()),
-//    uiState: StateFlow<UiState> = MutableStateFlow(UiState()),
     permissionRequester: PermissionRequester = PermissionRequester(),
 ) {
     val context = LocalContext.current
@@ -77,6 +76,7 @@ internal fun WelcomeScreen(
         Spacer(modifier = Modifier.height(40.dp))
 
         Button(
+            enabled = !uiState.value.isLoading,
             onClick = {
                 if(uiState.value.isLoading) return@Button
                 if(!permissionState.allPermissionsGranted)permissionState.launchMultiplePermissionRequest()
@@ -84,10 +84,12 @@ internal fun WelcomeScreen(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            if(uiState.value.isLoading)
-                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp))
-            else
                 Text(text = context.getString(R.string.start))
+        }
+        if(uiState.value.isLoading){
+            Spacer(modifier = Modifier.height(10.dp))
+            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(20.dp))
+            Text("Loading...")
         }
 
         Spacer(modifier = Modifier.height(80.dp))

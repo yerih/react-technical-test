@@ -17,21 +17,13 @@
 package com.faceapp.test.feature.faceapp.ui
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.faceapp.test.RegulaLicense
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import com.faceapp.test.core.data.FaceAppRepository
-import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Loading
-import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Success
 import com.faceapp.test.toPercentage
 import com.regula.facesdk.FaceSDK
 import com.regula.facesdk.callback.FaceInitializationCompletion
@@ -49,12 +41,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-data class UiState(
-    val isLoading: Boolean = true,
-    val isInitialized: Boolean? = null,
-    val error: Error? = null,
-)
-
 
 
 
@@ -67,8 +53,8 @@ class FaceAppViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(UiState())
     var uiState = _uiState.asStateFlow()
-    var bmp1: Bitmap? = null
-    var bmp2: Bitmap? = null
+    var uri1: Uri? = null
+    var uri2: Uri? = null
 
 
 
@@ -91,16 +77,26 @@ class FaceAppViewModel @Inject constructor(
         }
     }
 
-    fun matchFaces(img1: Bitmap, img2: Bitmap){
-        val imgA = MatchFacesImage(img1, ImageType.PRINTED)
-        val imgB = MatchFacesImage(img2, ImageType.LIVE)
+
+    fun matchFaces(){
+        if(uri1 == null || uri2 == null){
+            uri1?:run{ Log.i("TGB", "bmp1 is null")}
+            uri2?:run{ Log.i("TGB", "bmp2 is null")}
+            return
+        }
+        val bmp1 = loadBitmapFromUri(context, uri1!!)
+//        Log.i("TGB", "matchFace: bmp1 = ${bmp1.toString()}")
+        val bmp2 = loadBitmapFromUri(context, uri2!!)
+//        Log.i("TGB", "matchFace: bmp2 = ${bmp2.toString()}")
+
+        val imgA = MatchFacesImage(bmp1, ImageType.PRINTED)
+        val imgB = MatchFacesImage(bmp2, ImageType.PRINTED)
         val matchFacesRequest = MatchFacesRequest(arrayListOf(imgA, imgB))
 
         val crop = OutputImageCrop(
             OutputImageCropAspectRatio.OUTPUT_IMAGE_CROP_ASPECT_RATIO_3X4
         )
-        val outputImageParams = OutputImageParams(crop, Color.WHITE)
-        matchFacesRequest.outputImageParams = outputImageParams
+        matchFacesRequest.outputImageParams = OutputImageParams(crop, Color.WHITE)
 
         FaceSDK.Instance().matchFaces(context, matchFacesRequest){response ->
             val split = MatchFacesSimilarityThresholdSplit(response.results, 0.75)
@@ -112,8 +108,10 @@ class FaceAppViewModel @Inject constructor(
 
             similarity?.run {
                 Log.i("TGB", "similarity = ${similarity.toPercentage()}")
+                _uiState.update { it.copy(resultModel = FaceResultModel(similarity = similarity.toPercentage())) }
             }?: response.exception?.let {
                 Log.i("TGB", "similarity exception= ${it.message}")
+                _uiState.update { state -> state.copy(resultModel = null, error = Error(it.message)) }
             } ?: let{
                 Log.i("TGB", "similarity = null")
             }
@@ -122,15 +120,20 @@ class FaceAppViewModel @Inject constructor(
     }
 
 
-    fun captureBitmap(b: Bitmap, isFirst: Boolean = true){
+    fun captureBitmap(uri: Uri, isFirst: Boolean = true){
         Log.i("TGB","captureBitmap: number = ${if(isFirst)1 else 2}")
-        if(isFirst) bmp1 = b else bmp2 = b
+        if(isFirst) uri1 = uri else uri2 = uri
     }
 
 }
 
-sealed interface FaceAppUiState {
-    object Loading : FaceAppUiState
-//    data class Error(val throwable: Throwable) : FaceAppUiState
-    data class Success(val data: List<String>) : FaceAppUiState
-}
+
+
+data class UiState(
+    val isLoading: Boolean = true,
+    val isInitialized: Boolean? = null,
+    val error: Error? = null,
+    val resultModel: FaceResultModel? = null,
+)
+
+
