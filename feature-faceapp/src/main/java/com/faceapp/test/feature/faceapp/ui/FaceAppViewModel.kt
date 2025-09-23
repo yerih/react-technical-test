@@ -28,14 +28,25 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import com.faceapp.test.core.data.FaceAppRepository
-import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Error
 import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Loading
 import com.faceapp.test.feature.faceapp.ui.FaceAppUiState.Success
 import com.regula.facesdk.FaceSDK
 import com.regula.facesdk.callback.FaceInitializationCompletion
 import com.regula.facesdk.configuration.InitializationConfiguration
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+
+data class UiState(
+    val isLoading: Boolean = true,
+    val isInitialized: Boolean? = null,
+    val error: Error? = null,
+)
+
+
+
 
 @HiltViewModel
 class FaceAppViewModel @Inject constructor(
@@ -43,25 +54,30 @@ class FaceAppViewModel @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ViewModel() {
 
-    val uiState: StateFlow<FaceAppUiState> = faceAppRepository
+    val uiState1_: StateFlow<FaceAppUiState> = faceAppRepository
         .faceApps.map<List<String>, FaceAppUiState> { Success(data = it) }
-        .catch { emit(Error(it)) }
+//        .catch { emit(Error(it)) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), Loading)
 
-    fun onStart(){
-        Log.i("TGB","onStart")
-    }
+    private val _uiState = MutableStateFlow(UiState())
+    var uiState = _uiState.asStateFlow()
+
+
 
     init {
+        _uiState.update { it.copy(isLoading = true) }
         val license: ByteArray? = RegulaLicense.getLicense(context)
         license?.let{
-                    Log.i("TGB", "license != null")
-            val configuration =
-                InitializationConfiguration.Builder(license).setLicenseUpdate(false).build()
+            Log.i("TGB", "license != null")
+            val configuration = InitializationConfiguration.Builder(license).setLicenseUpdate(false).build()
             FaceSDK.Instance().initialize(context, configuration,
                 FaceInitializationCompletion { status, exception ->
-                    Log.i("TGB", "status = ${status}, exception = ${exception}")
-                })
+                    _uiState.update {
+                        if(status) it.copy(isLoading = false, error = null)
+                        else it.copy(isLoading = true, error = Error(exception.message))
+                    }
+                    Log.i("TGB", "status = ${status}, exception = $exception")
+            })
         }?:let{
             Log.i("TGB", "license null")
         }
@@ -72,6 +88,6 @@ class FaceAppViewModel @Inject constructor(
 
 sealed interface FaceAppUiState {
     object Loading : FaceAppUiState
-    data class Error(val throwable: Throwable) : FaceAppUiState
+//    data class Error(val throwable: Throwable) : FaceAppUiState
     data class Success(val data: List<String>) : FaceAppUiState
 }

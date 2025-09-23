@@ -38,13 +38,13 @@ class FaceAppViewModelTest {
     @Test
     fun uiState_initiallyLoading() = runTest {
         val viewModel = FaceAppViewModel(FakeFaceAppRepository())
-        assertEquals(viewModel.uiState.first(), FaceAppUiState.Loading)
+        assertEquals(viewModel.uiState1_.first(), FaceAppUiState.Loading)
     }
 
     @Test
     fun uiState_onItemSaved_isDisplayed() = runTest {
         val viewModel = FaceAppViewModel(FakeFaceAppRepository())
-        assertEquals(viewModel.uiState.first(), FaceAppUiState.Loading)
+        assertEquals(viewModel.uiState1_.first(), FaceAppUiState.Loading)
     }
 }
 

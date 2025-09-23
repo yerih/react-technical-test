@@ -31,18 +31,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        val license: ByteArray? = RegulaLicense.getLicense(this)
-//        license?.let{
-//                    Log.i("TGB", "license != null")
-//            val configuration =
-//                InitializationConfiguration.Builder(license).setLicenseUpdate(true).build()
-//            FaceSDK.Instance().initialize(this, configuration,
-//                FaceInitializationCompletion { status, exception ->
-//                    Log.i("TGB", "status = ${status}, exception = ${exception}")
-//                })
-//        }?:let{
-//            Log.i("TGB", "license null")
-//        }
         setContent {
             MyApplicationTheme {
                 Surface(
