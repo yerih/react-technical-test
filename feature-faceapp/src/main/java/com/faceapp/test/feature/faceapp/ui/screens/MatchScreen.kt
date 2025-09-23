@@ -1,6 +1,7 @@
 package com.faceapp.test.feature.faceapp.ui.screens
 
 import android.net.Uri
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,12 +41,11 @@ import com.faceapp.test.feature.faceapp.ui.presentation.UiState
 fun MatchScreen(
     onStart: ()-> Unit = {},
     onMatchAgain: ()->Unit = {},
-    onExit: ()->Unit = {},
     uri1: Uri,
     uri2: Uri,
     uiState: State<UiState> = mutableStateOf(UiState()),
 ){
-
+    val context = LocalContext.current
     var showBtns by remember{ mutableStateOf(false) }
     LaunchedEffect(key1 = Unit){ onStart() }
 
@@ -108,7 +109,7 @@ fun MatchScreen(
             Spacer(modifier = Modifier.height(10.dp))
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onExit,
+                onClick = { (context as ComponentActivity).finish() },
             ) {
                 Text("Exit")
             }
